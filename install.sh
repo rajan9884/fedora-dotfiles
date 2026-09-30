@@ -300,6 +300,56 @@ if [ "$DO_EXTERNAL" -eq 1 ]; then
     }
 
     install_starship || true
+    install_awww() {
+        # awww (animated wallpaper daemon for any Wayland compositor,
+        # including sway): no Fedora package, so build into ~/.local/bin
+        # from upstream git (https://codeberg.org/LGFae/awww).
+        # The v0.12.x daemon predates rustc 1.90+ and fails on the new
+        # rustix unsafe-fn rules (E0133 on three stdio fd borrows); wrap
+        # them in unsafe blocks before building (sound: plain fd borrows).
+        # Needs wayland-devel, wayland-protocols-devel, lz4-devel (see
+        # packages.txt) plus the cargo/rust toolchain.
+        if command -v awww >/dev/null 2>&1 && command -v awww-daemon >/dev/null 2>&1; then
+            log "awww already installed"; return 0
+        fi
+        command -v cargo >/dev/null 2>&1 || { warn "cargo missing; skipping awww"; return 1; }
+        command -v git >/dev/null 2>&1 || { warn "git missing; skipping awww"; return 1; }
+        log "Building awww from upstream git (can take a few minutes)"
+        if ! command -v awww >/dev/null 2>&1; then
+            cargo install --quiet --git https://codeberg.org/LGFae/awww awww \
+                --root "$HOME/.local" 2>/dev/null \
+                || warn "awww client build failed; wallpaper switches fall back to swaybg"
+        fi
+        if ! command -v awww-daemon >/dev/null 2>&1; then
+            local tmp
+            tmp="$(mktemp -d)"
+            if git clone --quiet --depth 1 https://codeberg.org/LGFae/awww "$tmp/awww" 2>/dev/null; then
+                sed -i 's/let stdout = rustix::stdio::stdout();/let stdout = unsafe { rustix::stdio::stdout() };/' \
+                    "$tmp/awww/daemon/src/cli.rs"
+                sed -i 's/let stderr = rustix::stdio::stderr();/let stderr = unsafe { rustix::stdio::stderr() };/' \
+                    "$tmp/awww/daemon/src/main.rs"
+                if cargo install --quiet --path "$tmp/awww/daemon" \
+                        --root "$HOME/.local" 2>/dev/null; then
+                    log "  awww-daemon installed"
+                else
+                    warn "awww-daemon build failed; wallpaper switches fall back to swaybg"
+                fi
+            else
+                warn "awww clone failed; wallpaper switches fall back to swaybg"
+            fi
+            rm -rf "$tmp"
+        fi
+    }
+
+    install_awww || true
+    # swayosd comes from the COPR enabled above (author's erikreider/swayosd).
+    if ! command -v swayosd-server >/dev/null 2>&1; then
+        log "Installing swayosd from COPR"
+        "$PRIV" dnf install -y swayosd \
+            || warn "swayosd install failed; volume/brightness OSD will not work"
+    else
+        log "swayosd already installed"
+    fi
     # hyprpicker comes from the COPR enabled above (not on crates.io).
     if ! command -v hyprpicker >/dev/null 2>&1; then
         log "Installing hyprpicker from COPR"

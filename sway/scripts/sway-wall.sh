@@ -24,18 +24,20 @@ if ! mkdir "$LOCKDIR" 2>/dev/null; then
 fi
 trap 'rmdir "$LOCKDIR" 2>/dev/null' EXIT
 
-# 1. Set wallpaper. Prefer awww-daemon when it is up (it paints over the
-#    sway background, so the swaymsg fallback MUST only run when the
-#    daemon is down — otherwise the output reconfigure aborts awww's
-#    grow animation mid-flight and you see "no transition".
+# 1. Set wallpaper with a circle-out reveal (awww `outer`: the old frame
+#    shrinks to the centre while the new one is revealed — the Hyprland
+#    swww circle-out look). Prefer awww-daemon when it is up (it paints
+#    over the sway background, so the swaymsg fallback MUST only run when
+#    the daemon is down — otherwise the output reconfigure aborts awww's
+#    animation mid-flight and you see "no transition".
 if awww query >/dev/null 2>&1; then
-    awww img "$WALLPAPER" --transition-type grow --transition-pos center --transition-duration 1.5 --transition-fps 30 || \
+    awww img "$WALLPAPER" --transition-type outer --transition-pos center --transition-duration 1.5 --transition-fps 30 || \
         { notify-send "Wallpaper Error" "awww failed to set $(basename "$WALLPAPER")" -u critical; exit 1; }
 else
     setsid awww-daemon >/dev/null 2>&1 < /dev/null &
     sleep 0.5
     if awww query >/dev/null 2>&1; then
-        awww img "$WALLPAPER" --transition-type grow --transition-pos center --transition-duration 1.5 --transition-fps 30 || \
+        awww img "$WALLPAPER" --transition-type outer --transition-pos center --transition-duration 1.5 --transition-fps 30 || \
             { notify-send "Wallpaper Error" "awww failed to set $(basename "$WALLPAPER")" -u critical; exit 1; }
     else
         swaymsg output "*" bg "$WALLPAPER" fill || \
@@ -117,6 +119,9 @@ fi
 
 # 7. Nudges for apps that need a restart
 pgrep -x nvim >/dev/null 2>&1 && notify-send "Neovim Theme Updated" "Restart nvim to apply new colors" || true
+# btop reads its theme once at startup (no live-reload), so a running btop
+# keeps the old palette until restarted — same as foot/nvim.
+pgrep -x btop >/dev/null 2>&1 && notify-send "Btop Theme Updated" "Restart btop to apply new colors" || true
 pywalfox update 2>/dev/null || true
 if pgrep -x chromium >/dev/null 2>&1 || pgrep -x brave >/dev/null 2>&1 || pgrep -x helium >/dev/null 2>&1; then
     notify-send "Browser Theme Updated" "Restart Chromium/Brave to apply new colors" -i "$WALLPAPER"

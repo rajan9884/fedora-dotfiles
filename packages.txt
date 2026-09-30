@@ -12,6 +12,8 @@
 #   swayosd     <- COPR erikreider/swayosd   (volume/brightness OSD)
 #   starship    <- upstream GitHub release   (shell prompt)
 #   hyprpicker  <- COPR nett00n/hyprland     (Wayland colour picker)
+#   awww        <- upstream Codeberg git     (animated wallpaper daemon;
+#                   built by install.sh into ~/.local/bin)
 #
 # yazi is intentionally omitted (unused).
 #
@@ -30,6 +32,7 @@ waybar
 foot
 foot-terminfo
 rofi
+rofimoji
 SwayNotificationCenter
 
 # ── Desktop helper daemons and utilities ────────────────────────────
@@ -43,6 +46,9 @@ wl-clipboard
 wf-recorder
 grim
 slurp
+# satty (screenshot annotator) lives in the nett00n/hyprland COPR on F44;
+# install.sh enables that COPR for hyprpicker already, so plain dnf works.
+satty
 wlsunset
 wlr-randr
 
@@ -173,6 +179,12 @@ gcc
 gcc-c++
 make
 pkgconf-pkg-config
+git
+# awww (wallpaper daemon) build deps: install.sh builds awww/awww-daemon
+# from upstream git into ~/.local/bin (no Fedora package exists).
+wayland-devel
+wayland-protocols-devel
+lz4-devel
 
 # ── Node (opencode / Antigravity CLI) ───────────────────────────────
 # Fedora ships versioned Node packages and they conflict with each other,
@@ -186,6 +198,9 @@ nodejs24-npm-bin
 python3-pillow
 python3-secretstorage
 python3-pyatspi
+# autotiling (automatic split orientation) is vendored as bin/autotiling
+# (upstream nwg-piotr/autotiling, GPL3) and needs python3-i3ipc at runtime.
+python3-i3ipc
 
 # ── Qt Wayland + theming for Qt apps ─────────────────────────────────
 qt5-qtwayland
