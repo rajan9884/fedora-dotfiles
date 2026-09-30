@@ -1,0 +1,75 @@
+[config]
+# Generate colors in dark mode by default
+default_mode = "dark"
+
+[templates.waybar]
+input_path = "~/.config/matugen/templates/waybar.css"
+output_path = "~/.config/waybar/colors.css"
+
+[templates.foot]
+input_path = "~/.config/matugen/templates/foot-colors.ini"
+output_path = "~/.config/foot/colors.ini"
+
+[templates.rofi]
+input_path = "~/.config/matugen/templates/rofi.rasi"
+output_path = "~/.config/rofi/colors.rasi"
+
+[templates.antigravity]
+input_path = "~/.config/matugen/templates/antigravity.json"
+output_path = "~/.config/Antigravity/User/settings.json"
+
+[templates.nvim]
+input_path = "~/.config/matugen/templates/nvim.lua"
+output_path = "~/.config/nvim/lua/matugen-colors.lua"
+
+[templates.gtk3]
+input_path = "~/.config/matugen/templates/gtk3.css"
+output_path = "~/.config/gtk-3.0/gtk.css"
+
+[templates.gtk4]
+input_path = "~/.config/matugen/templates/gtk4.css"
+output_path = "~/.config/gtk-4.0/gtk.css"
+
+[templates.gtk4_dark]
+input_path = "~/.config/matugen/templates/gtk4.css"
+output_path = "~/.config/gtk-4.0/gtk-dark.css"
+
+[templates.sourceview]
+input_path = "~/.config/matugen/templates/sourceview.xml"
+output_path = "~/.local/share/gtksourceview-5/styles/Matugen.xml"
+
+[templates.sushi_builder_dark]
+input_path = "~/.config/matugen/templates/sushi-builder-dark.xml"
+output_path = "~/.local/share/gtksourceview-4/styles/builder-dark.style-scheme.xml"
+
+[templates.swayosd]
+input_path = "~/.config/matugen/templates/swayosd.css"
+output_path = "~/.config/swayosd/style.css"
+
+[templates.helium_theme]
+input_path = "~/.config/matugen/templates/helium-theme.json"
+output_path = "~/.config/helium-theme/manifest.json"
+
+[templates.vscode]
+input_path = "~/.config/matugen/templates/vscode-colors.json"
+output_path = "~/.config/Code/User/matugen-colors.json"
+
+[templates.btop]
+input_path = "~/.config/matugen/templates/btop.theme"
+output_path = "~/.config/btop/themes/matugen.theme"
+
+[templates.swaync]
+input_path = "~/.config/matugen/templates/swaync.css"
+output_path = "~/.config/swaync/style.css"
+
+[templates.starship]
+input_path = "~/.config/matugen/templates/starship.toml"
+output_path = "~/.config/starship.toml"
+
+[templates.sway]
+input_path = "~/.config/matugen/templates/sway-colors"
+output_path = "~/.config/sway/colors"
+
+[templates.swaylock]
+input_path = "~/.config/matugen/templates/swaylock-config"
+output_path = "~/.config/sway/swaylock-config"

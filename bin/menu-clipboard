@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+# ──────────────────────────────────────────────
+#   Unified Rofi Menu Wrapper
+#   Usage: rofi-menu <mode>
+#   Modes: launcher | wallpapers | power | emoji | calc | clipboard | keybinds
+# ──────────────────────────────────────────────
+
+set -e
+
+MODE="${1:-$(basename "$0" | sed 's/^menu-//')}"
+THEME_DIR="$HOME/.config/rofi"
+LAUNCHER_THEME="$THEME_DIR/active-launcher.rasi"
+SCRIPTS_THEME="$THEME_DIR/active-scripts.rasi"
+PICKER_THEME="$THEME_DIR/active-picker.rasi"
+
+case "$MODE" in
+    launcher|drun)
+        THEME="$LAUNCHER_THEME"
+        rofi -show drun -theme "$THEME"
+        ;;
+    window)
+        THEME="$LAUNCHER_THEME"
+        rofi -show window -theme "$THEME"
+        ;;
+    wallpapers|background_menu|wallpaper-menu)
+        ~/.local/bin/fedora-wallpaper-picker
+        ;;
+    power|power_menu|menu-power)
+        THEME="$SCRIPTS_THEME"
+        OPTIONS="Lock\nLogout\nReboot\nShutdown\nSuspend\nHibernate"
+        echo -e "$OPTIONS" | rofi -dmenu -p "Power" -theme "$THEME" | {
+            read -r choice
+            case "$choice" in
+                Lock)     swaylock ;;
+                Logout)   swaymsg exit ;;
+                Reboot)   loginctl reboot ;;
+                Shutdown) loginctl poweroff ;;
+                Suspend)  loginctl suspend ;;
+                Hibernate) loginctl hibernate ;;
+            esac
+        }
+        ;;
+    emoji|emoji_menu|menu-emoji)
+        EMOJI_THEME="$HOME/.config/rofi/emoji-grid.rasi"
+        # NOTE: keep selector-args to a single -theme. Passing -theme-str
+        # with multiple blocks (entry placeholder + textbox font) makes
+        # rofi leak the raw theme text into the search box, so those
+        # rules now live in emoji-grid.rasi itself.
+        rofimoji --selector rofi \
+            --clipboarder wl-copy \
+            --action type copy \
+            --hidden-descriptions \
+            --selector-args "-theme \"$EMOJI_THEME\""
+        ;;
+    clipboard|clipboard_menu|menu-clipboard)
+        # Clipboard: rofi script-mode backend
+        # (config/rofi/clipboard.sh) + split-preview theme.
+        # Enter pastes, Ctrl+Enter copies, Shift+Delete removes.
+        THEME="$THEME_DIR/clipboard.rasi"
+        rofi -show clipboard \
+            -modi "clipboard:$HOME/.config/rofi/clipboard.sh" \
+            -theme "$THEME" -show-icons
+        ;;
+    clipboard-wipe)
+        THEME="$SCRIPTS_THEME"
+        confirm="$(printf 'No\nYes, wipe history' | rofi -dmenu -p "Wipe clipboard history?" -theme "$THEME")"
+        if [ "$confirm" = "Yes, wipe history" ]; then
+            cliphist wipe
+            # cliphist can reuse numeric ids after a wipe, so drop
+            # the per-id decoded image cache used for previews.
+            rm -rf -- "${XDG_CACHE_HOME:-$HOME/.cache}/rofi/clipboard-images"
+        fi
+        ;;
+    keybinds|keybinds_menu|menu-keybinds)
+        # Live keybindings cheatsheet parsed from hyprland.lua
+        "$HOME/.config/sway/scripts/keybinds-cheatsheet.sh"
+        ;;
+    *)
+        echo "Unknown mode: $MODE" >&2
+        exit 1
+        ;;
+esac

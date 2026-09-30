@@ -1,0 +1,56 @@
+/* ── Clipboard manager (split preview) ──
+ * Applet base with a two-pane layout: left list + right live preview.
+ * Used in rofi script-mode: entry icons feed icon-current-entry,
+ * so images preview large on the right half as selection moves.
+ */
+@import "~/.config/rofi/applet.rasi"
+
+window {
+    width:      875px;
+    location:   center;
+    anchor:     center;
+    x-offset:   0;
+    y-offset:   0;
+}
+
+/* Left list + right preview, split ~half-half. */
+mainbox {
+    children: [ inputbar, listview-split ];
+}
+
+listview-split {
+    orientation:      horizontal;
+    spacing:          0px;
+    children:         [ listview, icon-current-entry ];
+    background-color: @bg-card;
+    border-radius:    0 0 18px 18px;
+    padding:          8px;
+}
+
+listview {
+    width:    350px;
+    lines:    8;
+    padding:  0 8px 0 0;
+}
+
+element-icon {
+    size: 34px;
+}
+
+/* Right-half live preview of the selected entry: images render
+ * large, text rows show their full contents rasterized to PNG by
+ * clipboard.sh (icon-current-entry can only display images).
+ * Top-aligned so tall text previews read from the first line.
+ * Explicit px size: percentage sizes don't scale the preview image.
+ * Divider echoes the 1px vertical rule between list and preview.
+ */
+icon-current-entry {
+    expand:           true;
+    size:             300px;
+    background-color: transparent;
+    border:           0px 0px 0px 1px;
+    border-color:     @bg-field;
+    border-radius:    0px;
+    vertical-align:   0;
+    horizontal-align: 0.5;
+}

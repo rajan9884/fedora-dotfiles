@@ -1,0 +1,10 @@
+/* Power menu — shared applet base, narrower for 5 rows */
+@import "applet.rasi"
+
+window {
+    width: 360px;
+}
+
+entry {
+    placeholder: "";
+}

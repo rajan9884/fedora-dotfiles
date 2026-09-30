@@ -1,0 +1,252 @@
+/* ──────────────────────────────────────────────
+ *   Waybar – Noro Theme (Dynamic Colors)
+ * ────────────────────────────────────────────── */
+
+@import "colors.css";
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+* {
+    font-family: "JetBrainsMono Nerd Font", "Inter", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    min-height: 0;
+}
+
+window#waybar {
+    background: transparent;
+}
+
+/* ── Grouping Strategy ── */
+#clock, #custom-user,
+#workspaces, #custom-launcher,
+#battery, #custom-wifi, #bluetooth, #custom-power {
+    background: @surface; /* DYNAMIC: Based on wallpaper */
+    color: @on_surface;    /* DYNAMIC: Based on wallpaper */
+    padding: 4px 12px;
+    margin: 6px 0;
+}
+
+/* --- Left Group [Clock | User] --- */
+#clock {
+    padding-right: 15px;
+}
+#custom-user {
+    border-radius: 0 12px 12px 0;
+    margin-right: 30px; 
+    background: @primary; /* DYNAMIC */
+    color: @on_primary;    /* DYNAMIC */
+    padding-left: 15px;
+    padding-right: 10px;
+}
+
+#custom-launcher {
+    color: @primary;
+    font-size: 18px;
+
+    margin-left: 10px;
+    padding-left: 15px;
+    border-radius: 12px 0 0 12px;
+    padding-right: 10px;
+}
+/* --- Shortcut Tools [Record | Dictate] --- */
+#custom-record, #custom-voxtype {
+    background: @surface;
+    color: @on_surface;
+    padding: 4px 12px;
+    margin: 6px 0;
+}
+#custom-record {
+    color: @tertiary;
+}
+#custom-record.recording {
+    color: @error;
+    animation: pulse 1s infinite;
+}
+#custom-voxtype {
+    color: @primary;
+}
+/* --- Utility icons (backgroundless, float between the three capsules) --- */
+#custom-notifications, #custom-clipboard,
+#custom-power-profile {
+    background: transparent;
+    color: @on_surface;
+    padding: 4px 8px;
+    margin: 6px 0;
+}
+#custom-wifi {
+    background: @primary; /* part of right pill */
+    color: @on_primary;
+    padding: 4px 8px;
+    margin: 6px 0;
+}
+#custom-wifi.wifi-on {
+    color: @on_primary;
+}
+#custom-wifi.wifi-wired,
+#custom-wifi.wifi-hotspot {
+    color: @on_primary;
+}
+#custom-wifi.wifi-tether {
+    color: @on_primary;
+    opacity: 0.85;
+}
+#custom-wifi.wifi-off,
+#custom-wifi.wifi-disconnected {
+    color: @on_primary;
+    opacity: 0.55;
+}
+/* --- Center Group [Workspaces | Bright | Vol] --- */
+#workspaces {
+    border-radius: 12px 0 0 12px;
+    padding-left: 5px;
+    padding-right: 10px;    
+}
+#backlight {
+    padding-left: 10px;
+}
+#pulseaudio {
+    border-radius: 0 12px 12px 0;
+    padding: 4px 10px 4px 6px;
+}
+/* mpris + group stay backgroundless so only three capsules remain */
+#mpris {
+    padding: 4px 10px;
+    margin: 6px 0 6px 8px;
+    background: transparent;
+    color: @on_surface;
+}
+#custom-group {
+    padding: 4px 12px;
+    margin: 6px 0 6px 8px;
+    background: transparent;
+    color: @primary;
+}
+#custom-group.empty {
+    background: transparent;
+    padding: 4px 2px;
+    margin: 6px 0;
+}
+#backlight, #pulseaudio {
+
+    padding: 4px 6px;
+    margin: 6px 0;
+    background: @primary; /* DYNAMIC */
+    color: @on_primary;    /* DYNAMIC */
+}
+
+/* --- Right Group [Bat | Wifi | BT | Power] — one continuous pill, two-tone like left/center --- */
+#battery {
+    border-radius: 12px 0 0 12px;
+    margin-left: 30px;
+    padding-left: 15px;
+    background: @surface; /* DYNAMIC — matches #clock / #workspaces half */
+    color: @on_surface;    /* DYNAMIC */
+}
+#tray {
+    background: transparent;
+    color: @on_surface;
+    padding: 4px 8px;
+    margin: 6px 0 6px 30px;
+}
+#custom-wifi {
+    border-radius: 0;
+}
+#bluetooth {
+    background: @primary; /* DYNAMIC */
+    color: @on_primary;    /* DYNAMIC */
+    padding: 4px 8px;
+    margin: 6px 0;
+    border-radius: 0;
+}
+#bluetooth.disabled,
+#bluetooth.off {
+    opacity: 0.55;
+}
+#custom-power {
+    border-radius: 0 12px 12px 0;
+    padding-left: 10px;
+    padding-right: 15px;
+   /* color: @error;  DYNAMIC */
+    background: @primary; /* DYNAMIC */
+    color: @on_primary;    /* DYNAMIC */
+
+}
+
+/* --- Hover & Active --- */
+/* Idle/empty workspaces: dim so they recede */
+#workspaces button {
+    color: @on_surface_variant;
+    background: transparent;
+    border: 1px solid transparent;
+    opacity: 0.3;
+    padding: 0 6px;
+    border-radius: 8px;
+}
+/* Occupied (apps open) + focused (current): same intensity, glyph-only */
+#workspaces button:not(.empty):not(.active):not(.focused),
+#workspaces button.active,
+#workspaces button.focused,
+#workspaces button.visible {
+    color: @primary;
+    background: transparent;
+    background-image: none;
+    border-color: transparent;
+    opacity: 1;
+    box-shadow: none;
+    text-shadow: none;
+}
+#workspaces button.urgent {
+    color: @error;
+    background: transparent;
+    background-image: none;
+    border-color: transparent;
+    box-shadow: none;
+    text-shadow: none;
+    opacity: 1;
+}
+#workspaces button:hover {
+    color: @on_surface;
+    background: transparent;
+    background-image: none;
+    box-shadow: none;
+    opacity: 1;
+}
+#workspaces button.active:hover,
+#workspaces button.focused:hover {
+    color: @primary;
+    background: transparent;
+    background-image: none;
+    box-shadow: none;
+}
+
+#battery.charging {
+    color: #a6e3a1; /* Greenish */
+    animation: pulse 1.5s infinite;
+}
+
+#custom-notifications.has-notifications {
+    color: @tertiary;
+}
+#custom-vpn.vpn-on {
+    color: @tertiary;
+}
+#custom-launcher:hover {
+    background: @surface_variant;
+    border-color: @outline;
+}
+/* ── System Tray ─── */
+#tray > .passive {
+    opacity: 0.7;
+}
+
+#tray > .active {
+    opacity: 1;
+}
+
+#tray > .needs-attention {
+    color: @error;
+}

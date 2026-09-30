@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Launch a URL as a minimal web app window (Chromium --app SSB).
+# Always uses chromium from PATH, forcing Wayland via chromium-flags.conf.
+# Usage: webapp-launch <url> [extra flags...]
+set -e
+
+if (($# == 0)); then
+  echo "Usage: webapp-launch <url> [extra-chromium-flags...]" >&2
+  exit 1
+fi
+
+# Prefer uwsm-app when available (uwsm session handling), else plain setsid.
+if command -v uwsm-app &>/dev/null; then
+  exec setsid uwsm-app -- chromium --app="$1" "${@:2}"
+else
+  exec setsid chromium --app="$1" "${@:2}"
+fi

@@ -1,0 +1,212 @@
+# fedora-dotfile — package set for Fedora (dnf5).
+#
+# Every entry was verified present in an enabled Fedora 44 x86_64
+# repository. Void-only / renamed packages were dropped or remapped;
+# README.md documents the full mapping.
+#
+# This file is dnf-only and intentionally contains nothing that needs a
+# third-party repository. install.sh handles those separately, because
+# they need a different trust model (COPR repos / upstream releases):
+#
+#   swayfx      <- COPR mochaa/swayfx        (compositor, sway fork)
+#   swayosd     <- COPR erikreider/swayosd   (volume/brightness OSD)
+#   starship    <- upstream GitHub release   (shell prompt)
+#   hyprpicker  <- COPR nett00n/hyprland     (Wayland colour picker)
+#
+# yazi is intentionally omitted (unused).
+#
+# Pure Wayland: no Xorg server, no XWayland, no X11 client packages.
+# The compositor runs with `xwayland disable`, so nothing here pulls one in.
+
+# ── Compositor ──────────────────────────────────────────────────────
+swayfx
+sway-contrib
+swaybg
+swayidle
+swaylock
+
+# ── Bar, terminal, launcher, notifications ──────────────────────────
+waybar
+foot
+foot-terminfo
+rofi
+SwayNotificationCenter
+
+# ── Desktop helper daemons and utilities ────────────────────────────
+brightnessctl
+playerctl
+mako
+pavucontrol
+cliphist
+wtype
+wl-clipboard
+wf-recorder
+grim
+slurp
+wlsunset
+wlr-randr
+
+# ── Portals (screenshot, screen share, global menu) ─────────────────
+xdg-desktop-portal
+xdg-desktop-portal-gnome
+xdg-desktop-portal-gtk
+xdg-desktop-portal-wlr
+
+# ── Audio: one PipeWire session, socket-activated by systemd ────────
+# Void booted pipewire by hand from the compositor config. Fedora spawns
+# pipewire and pipewire-pulse from systemd user sockets, so the config no
+# longer starts the daemon itself (a manual start fights the socket unit).
+pipewire
+pipewire-alsa
+wireplumber
+alsa-utils
+alsa-plugins-pulseaudio
+rtkit
+
+# ── Display stack, VA-API, Vulkan ───────────────────────────────────
+# Void's mesa / mesa-dri / mesa-libgallium / mesa-vulkan-intel are all
+# split into these Fedora subpackages.
+mesa-dri-drivers
+mesa-vulkan-drivers
+mesa-libgbm
+mesa-demos
+libglvnd
+vulkan-tools
+libva
+libva-utils
+
+# ── Network + Bluetooth ─────────────────────────────────────────────
+NetworkManager
+NetworkManager-wifi
+network-manager-applet
+qalculate-gtk
+blueman
+nftables
+ufw
+
+# ── Login manager ───────────────────────────────────────────────────
+greetd
+tuigreet
+
+# ── Polkit authentication agent ─────────────────────────────────────
+# Void used polkit-gnome; Fedora 44 packages no polkit-gnome, so the KDE
+# agent takes over (pure Wayland, same D-Bus org.freedesktop.PolicyKit1
+# interface that sway/polkit-gnome satisfied before).
+polkit
+polkit-kde
+
+# ── Power + session management ──────────────────────────────────────
+power-profiles-daemon
+upower
+udisks2
+
+# ── Services pulled in by the rest of the set ───────────────────────
+chrony
+cronie
+iwd
+dbus-broker
+
+# ── Files, mounts, removable media ──────────────────────────────────
+nautilus
+nemo
+gvfs
+gvfs-afc
+gvfs-mtp
+gvfs-smb
+
+# ── Image + document viewers (all Wayland-native) ───────────────────
+imv
+evince
+sushi
+poppler-glib
+
+# ── GNOME integration ───────────────────────────────────────────────
+gnome-text-editor
+gnome-keyring
+papirus-icon-theme
+adwaita-icon-theme
+
+# ── Shell + prompt plugins ──────────────────────────────────────────
+zsh
+zsh-autosuggestions
+zsh-syntax-highlighting
+fzf
+atuin
+zoxide
+
+# ── CLI tools ───────────────────────────────────────────────────────
+git
+gh
+curl
+wget2
+jq
+lsof
+strace
+psmisc
+procps-ng
+tree
+fd-find
+ripgrep
+bat
+eza
+tmux
+neovim
+vim-enhanced
+vim-common
+fastfetch
+btop
+gum
+tealdeer
+man-pages
+bash-completion
+git-delta
+tig
+diff-so-fancy
+nload
+# Void's ffmpeg6 -> ffmpeg-free (the only ffmpeg build Fedora ships).
+ffmpeg-free
+
+# ── Toolchains kept from the Void set ───────────────────────────────
+cargo
+rust
+gcc
+gcc-c++
+make
+pkgconf-pkg-config
+
+# ── Node (opencode / Antigravity CLI) ───────────────────────────────
+# Fedora ships versioned Node packages and they conflict with each other,
+# so exactly one major must be pinned. 24 is the Fedora 44 default; swap
+# all three to nodejs22-* if you want the older LTS instead.
+nodejs24
+nodejs24-npm
+nodejs24-npm-bin
+
+# ── Python helpers referenced by the dotfiles ───────────────────────
+python3-pillow
+python3-secretstorage
+python3-pyatspi
+
+# ── Qt Wayland + theming for Qt apps ─────────────────────────────────
+qt5-qtwayland
+qt6-qtwayland
+qt5ct
+qt6ct
+breeze-icon-theme
+
+# ── Fonts ───────────────────────────────────────────────────────────
+# Nerd Fonts are downloaded into ~/.local/share/fonts by install.sh,
+# because Fedora has no `nerd-fonts` package.
+jetbrains-mono-fonts
+dejavu-sans-fonts
+google-noto-fonts-common
+google-noto-color-emoji-fonts
+fontconfig
+
+# ── SSH ─────────────────────────────────────────────────────────────
+openssh-server
+openssh-clients
+
+# ── Kernel extras (Void used linux-mainline + its headers) ──────────
+kernel-modules-extra
+kernel-headers

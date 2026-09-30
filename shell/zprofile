@@ -1,0 +1,8 @@
+# ~/.zprofile — Fedora dotfiles.
+#
+# Executed by zsh for login shells.
+
+# Autostart sway on tty1 login
+if [ -z "$WAYLAND_DISPLAY" ] && { [ "$XDG_VTNR" = 1 ] || [ "$(tty 2>/dev/null)" = "/dev/tty1" ]; }; then
+    exec start-sway
+fi

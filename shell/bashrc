@@ -1,0 +1,70 @@
+# ~/.bashrc — Fedora dotfiles.
+#
+# Guarded tool inits: a missing tool is skipped silently, so the shell always
+# starts clean even mid-install (nothing here may error).
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# ── Aliases ──
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias ff="fzf --preview 'bat --color=always {}'"
+alias ll='ls -lt'
+alias ..='cd ../'
+
+# Dual-GitHub helpers: git-work / git-personal / git-whoami
+[ -f "$HOME/.config/zsh/git-accounts.sh" ] && source "$HOME/.config/zsh/git-accounts.sh"
+
+# ── Editor + fzf ──
+export FZF_DEFAULT_OPTS="--height 90% --reverse --border"
+export EDITOR="nvim" VISUAL="nvim"
+export TERMINAL="foot"
+
+# ── Speed tools (zoxide/fzf/atuin/direnv) ──
+if command -v zoxide >/dev/null 2>&1; then eval "$(zoxide init bash --cmd z)"; fi
+if [ -f /usr/share/fzf/key-bindings.bash ]; then source /usr/share/fzf/key-bindings.bash; fi
+if [ -f /usr/share/fzf/completion.bash ]; then source /usr/share/fzf/completion.bash; fi
+# Atuin owns Ctrl-R; fzf keeps Ctrl-T + Alt-C.
+if command -v atuin >/dev/null 2>&1; then eval "$(atuin init bash --disable-up-arrow)"; fi
+if command -v direnv >/dev/null 2>&1; then eval "$(direnv hook bash)"; fi
+# Starship LAST among prompt tools: atuin creates the precmd_functions array,
+# which makes starship take its bash-preexec branch and skip PROMPT_COMMAND —
+# but bash-preexec isn't installed, so that array is never dispatched and the
+# prompt never fires (bare bash-5.3$). Drive starship from PROMPT_COMMAND
+# directly, and drop the dead array entry so it can't double-render.
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init bash)"
+  if declare -p precmd_functions &>/dev/null; then
+    for i in "${!precmd_functions[@]}"; do
+      [[ ${precmd_functions[$i]} == starship_precmd ]] && unset 'precmd_functions[i]'
+    done
+  fi
+  case ";$PROMPT_COMMAND;" in
+  *";starship_precmd;"*) ;;
+  *) PROMPT_COMMAND="starship_precmd${PROMPT_COMMAND:+;$PROMPT_COMMAND}" ;;
+  esac
+fi
+
+# nix-shell fallback indicator when starship is unavailable.
+# (With starship, the custom.nix-shell module in starship.toml handles it
+# dynamically per prompt; this is best-effort for minimal systems only.)
+if ! command -v starship >/dev/null 2>&1; then
+  if [ -n "$IN_NIX_SHELL$NIX_TRY_SHELL" ] || case ":$PATH:" in *:/nix/store/*) true ;; *) false ;; esac then
+    PS1="❄️ nix-shell $PS1"
+  fi
+fi
+
+# yazi: `y` cds into the directory you exit in (no-op when yazi is absent)
+y() {
+  command -v yazi >/dev/null 2>&1 || { echo "yazi not installed" >&2; return 1; }
+  local tmp="$(mktemp -t yazi-cwd.XXXXXX)"
+  command yazi "$@" --cwd-file="$tmp"
+  local cwd="$(cat -- "$tmp" 2>/dev/null)"
+  rm -f -- "$tmp"
+  [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && cd -- "$cwd"
+}
+
+# ~/.local/bin carries the repo helpers (fedora-wallpaper-picker, …).
+case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) export PATH="$HOME/.local/bin:$PATH" ;; esac
+export PATH="$HOME/.opencode/bin:$PATH"

@@ -1,0 +1,72 @@
+#!/bin/sh
+# Sets up the environment and launches swayfx on Fedora.
+#
+# Pure Wayland: GDK forcing `wayland` (no x11 fallback), Qt forcing
+# `wayland` only (xcb dropped), SDL on wayland, Electron/Ozone Wayland.
+# Seat access comes from systemd-logind (the default seat backend),
+# so there is no seatd here, and PipeWire is socket-activated by systemd —
+# nothing boots it by hand.
+
+# ── Toolkit backends ─────────────────────────────────────────────
+export CLUTTER_BACKEND=wayland
+export ELM_DISPLAY=wl
+export GDK_BACKEND=wayland
+export MOZ_ENABLE_WAYLAND=1
+export QT_QPA_PLATFORM="wayland"
+export QT_QPA_PLATFORMTHEME="qt6ct;qt5ct"
+export SDL_VIDEODRIVER=wayland
+export ELECTRON_OZONE_PLATFORM_HINT=wayland
+
+# ── Session identity ─────────────────────────────────────────────
+export DESKTOP_SESSION=sway
+export XDG_CURRENT_DESKTOP=sway
+export XDG_SESSION_TYPE=wayland
+export XDG_SESSION_DESKTOP=sway
+
+# ── VA-API drivers ───────────────────────────────────────────────
+# Intel (iHD for modern iGPUs), AMD (radeonsi) and NVIDIA are all listed
+# so the files move cleanly between machines — only the present GPU's
+# line takes effect, the rest are ignored.
+export LIBVA_DRIVER_NAME=iHD
+#export LIBVA_DRIVER_NAME=radeonsi
+#export LIBVA_DRIVER_NAME=nvidia
+unset VDPAU_DRIVER
+#export VDPAU_DRIVER=radeonsi
+#export VDPAU_DRIVER=nvidia
+#export GBM_BACKEND=nvidia-drm
+#export __GLX_VENDOR_LIBRARY_NAME=nvidia
+#export __GL_VRR_ALLOWED=0
+
+# ── Qt theming ───────────────────────────────────────────────────
+export QT_SELECT=Rosepine-Dark
+export QT_STYLE_OVERRIDE=Rosepine-Dark
+export QT_AUTO_SCREEN_SCALE_FACTOR=1
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+
+# ── XDG base dirs ────────────────────────────────────────────────
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CONFIG_DIRS="${XDG_CONFIG_DIRS:-/etc/xdg}"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_STATE_HOME="$HOME/.local/state"
+
+# ── XDG user dirs ────────────────────────────────────────────────
+export XDG_DESKTOP_DIR="$HOME/Desktop"
+export XDG_DOCUMENTS_DIR="$HOME/Documents"
+export XDG_DOWNLOAD_DIR="$HOME/Downloads"
+export XDG_MUSIC_DIR="$HOME/Music"
+export XDG_PICTURES_DIR="$HOME/Pictures"
+export XDG_PUBLICSHARE_DIR="$HOME/Public"
+export XDG_TEMPLATES_DIR="$HOME/Templates"
+export XDG_VIDEOS_DIR="$HOME/Videos"
+
+# ── Launch ───────────────────────────────────────────────────────
+# systemd-logind owns the session and the D-Bus user bus, so plain exec is
+# enough. PipeWire comes up from its systemd user sockets (see the
+# portal-warmup wait), never from a manual `pipewire` process.
+#
+# The binary is called `sway`: Fedora's swayfx package ships the fork
+# under the stock name, replacing plain sway in place.
+if [ "$(tty)" = "/dev/tty1" ]; then
+  exec sway
+fi

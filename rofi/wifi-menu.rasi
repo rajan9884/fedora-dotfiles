@@ -1,0 +1,10 @@
+/* Wi-Fi menu — thin override on the shared applet base */
+@import "applet.rasi"
+
+entry {
+    placeholder: "Filter networks…";
+}
+
+listview {
+    lines: 10;
+}

@@ -1,0 +1,11 @@
+[Default Applications]
+image/jpeg=imv.desktop
+image/png=imv.desktop
+image/gif=imv.desktop
+image/webp=imv.desktop
+image/bmp=imv.desktop
+text/plain=org.gnome.TextEditor.desktop
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop
+
+[Added Associations]
+text/plain=org.gnome.TextEditor.desktop;
